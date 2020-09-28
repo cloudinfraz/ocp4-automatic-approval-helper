@@ -23,4 +23,4 @@ oc create configmap script --from-file=approver.sh
 oc project serving-cert-approver
 oc create -f deploy-cert-approval-cronjob.yaml
 ```
-
+reference： Aizuddin
