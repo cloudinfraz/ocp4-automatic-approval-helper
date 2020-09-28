@@ -1,0 +1,91 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: signer-workaround
+rules:
+- apiGroups:
+  - certificates.k8s.io
+  resources:
+  - certificatesigningrequests
+  verbs:
+  - update
+  - list
+  - watch
+  - get
+- apiGroups:
+  - certificates.k8s.io
+  resources:
+  - certificatesigningrequests/approval
+  verbs:
+  - update
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: signer
+  namespace: serving-cert-approver
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: signer-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: signer-workaround
+  namespace: serving-cert-approver
+subjects:
+- kind: ServiceAccount
+  name: signer
+  namespace: serving-cert-approver
+
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: node-serving-cert-approver-cronjob
+  namespace: serving-cert-approver
+spec:
+  schedule: '*/30 * * * *'
+  concurrencyPolicy: Forbid
+  suspend: false
+  jobTemplate:
+    metadata:
+      creationTimestamp: null
+    spec:
+      template:
+        metadata:
+          creationTimestamp: null
+        spec:
+          volumes:
+            - name: script
+              configMap:
+                 name: script
+                 defaultMode: 0750
+          containers:
+            - resources:
+                limits:
+                  memory: '256Mi'
+                  cpu: '100m'
+              terminationMessagePath: /dev/termination-log
+              name: serving-cert-approver
+              volumeMounts:
+                - name: script
+                  mountPath: /approver
+              terminationMessagePolicy: File
+              image: nf-registry.com:9065/redhat/oclientubi8:latest
+              imagePullPolicy: IfNotPresent
+              args:
+                - /bin/sh
+                - '-c'
+                - /approver/approver.sh
+          restartPolicy: Never
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+          securityContext: {}
+          schedulerName: default-scheduler
+          serviceAccount: signer
+  successfulJobsHistoryLimit: 10
+  failedJobsHistoryLimit: 10
