@@ -1,4 +1,4 @@
-# OpenShift 4.x automatic-approval-helper
+# OpenShift 4.x Node Certification automatic-approval-helper
 1. Build Image (recommended to use prebuilt image https://catalog.redhat.com/software/containers/openshift4/ose-cli/5cd9ba3f5a13467289f4d51d?container-tabs=gti)
 
 ```
