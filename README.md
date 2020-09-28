@@ -1,5 +1,5 @@
 # OpenShift 4.x automatic-approval-helper
-## 1. Build Image (recommended to use prebuilt image https://catalog.redhat.com/software/containers/openshift4/ose-cli/5cd9ba3f5a13467289f4d51d?container-tabs=gti)
+1. Build Image (recommended to use prebuilt image https://catalog.redhat.com/software/containers/openshift4/ose-cli/5cd9ba3f5a13467289f4d51d?container-tabs=gti)
 
 ```
 cd ocp4-automatic-approval-helper
@@ -8,14 +8,13 @@ sudo podman push  nf-registry.com:9066/redhat/oclientubi8
 
 ```
 
-## 2. Create a OpenShift cronjob
+2. Create a OpenShift cronjob
 
 At this stage where we have:
 * Image
-* Secret
 * ConfigMap
 
-We now can defined the cronjob, this YAML defined a job that will run once per hour:
+We now can defined the cronjob, this YAML defined a job that will run once per 30 minutes:
 
 ```
 cd ocp4-automatic-approval-helper
