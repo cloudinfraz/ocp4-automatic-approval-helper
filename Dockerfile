@@ -1,4 +1,4 @@
-FROM nf-registry.com:9066/ubi8/ubi:latest
+FROM registry.access.redhat.com/ubi8/ubi:latest
 # specify the version string of the oc release, set in the buildconfig environment.
 ENV OC_VERSION "4.5.6"
 
